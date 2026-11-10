@@ -1,89 +1,87 @@
 import { useState } from "react";
 import { ShoppingBag, User, Search, Menu, X } from "lucide-react";
 
+const links = ["Inicio", "Colección", "Nosotros", "Contacto"];
+
 const NavBar = () => {
   const [isOpen, setIsOpen] = useState(false);
+  const [active, setActive] = useState("Inicio");
+  const cartCount = 0; // TODO: traerlo del estado/contexto del carrito
 
   return (
-    <nav className="relative w-full h-18 px-4 md:px-8 flex items-center justify-between border-b border-gray-100 bg-white">
-      {/* Brand / Logo */}
-      <div className="flex items-center">
-        <h1 className="text-2xl md:text-3xl font-bold font-sans tracking-tight">SÜD23</h1>
+    <nav className="relative w-full border-b border-neutral-100 bg-white">
+      <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 md:h-[72px] md:px-12">
+        {/* Logo */}
+        <a href="/" className="text-2xl font-black tracking-tight md:text-3xl">
+          SÜD23
+        </a>
+
+        {/* Menú desktop */}
+        <ul className="hidden items-center gap-8 md:flex">
+          {links.map((link) => (
+            <li key={link}>
+              <button
+                onClick={() => setActive(link)}
+                className={`cursor-pointer border-b-2 py-1 text-xs font-medium uppercase tracking-wide transition-colors duration-200 hover:border-black ${
+                  active === link ? "border-black" : "border-transparent"
+                }`}
+              >
+                {link}
+              </button>
+            </li>
+          ))}
+        </ul>
+
+        {/* Iconos + hamburguesa */}
+        <div className="flex items-center gap-3 md:gap-5">
+          <button
+            className="cursor-pointer p-1 transition-opacity hover:opacity-70"
+            aria-label="Buscar"
+          >
+            <Search className="h-5 w-5" />
+          </button>
+          <button
+            className="cursor-pointer p-1 transition-opacity hover:opacity-70"
+            aria-label="Cuenta de usuario"
+          >
+            <User className="h-5 w-5" />
+          </button>
+          <button
+            className="relative cursor-pointer p-1 transition-opacity hover:opacity-70"
+            aria-label="Carrito de compras"
+          >
+            <ShoppingBag className="h-5 w-5" />
+            <span className="absolute -right-0.5 -top-0.5 flex h-4 w-4 items-center justify-center rounded-full bg-black text-[9px] font-bold text-white">
+              {cartCount}
+            </span>
+          </button>
+
+          <button
+            onClick={() => setIsOpen(!isOpen)}
+            className="cursor-pointer p-1 md:hidden"
+            aria-label="Abrir menú"
+            aria-expanded={isOpen}
+          >
+            {isOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+          </button>
+        </div>
       </div>
 
-      {/* Menú Desktop (Oculto en mobile, visible desde md) */}
-      <ul className="hidden md:flex items-center gap-8 justify-center">
-        <li>
-          <button className="cursor-pointer border-b-2 border-transparent hover:border-black transition-colors duration-200 py-1 font-medium text-sm uppercase tracking-wide">
-            Inicio
-          </button>
-        </li>
-        <li>
-          <button className="cursor-pointer border-b-2 border-transparent hover:border-black transition-colors duration-200 py-1 font-medium text-sm uppercase tracking-wide">
-            Colección
-          </button>
-        </li>
-        <li>
-          <button className="cursor-pointer border-b-2 border-transparent hover:border-black transition-colors duration-200 py-1 font-medium text-sm uppercase tracking-wide">
-            Nosotros
-          </button>
-        </li>
-        <li>
-          <button className="cursor-pointer border-b-2 border-transparent hover:border-black transition-colors duration-200 py-1 font-medium text-sm uppercase tracking-wide">
-            Contacto
-          </button>
-        </li>
-      </ul>
-
-      {/* Iconos de Acción + Botón Hamburguesa */}
-      <div className="flex items-center gap-4 md:gap-6">
-        <button className="cursor-pointer p-1 hover:opacity-75 transition-opacity" aria-label="Buscar">
-          <Search className="w-5 h-5" />
-        </button>
-        <button className="cursor-pointer p-1 hover:opacity-75 transition-opacity" aria-label="Cuenta de usuario">
-          <User className="w-5 h-5" />
-        </button>
-        <button className="cursor-pointer p-1 hover:opacity-75 transition-opacity relative" aria-label="Carrito de compras">
-          <ShoppingBag className="w-5 h-5" />
-        </button>
-
-        {/* Botón Hamburguesa (Solo visible en mobile) */}
-        <button
-          onClick={() => setIsOpen(!isOpen)}
-          className="md:hidden cursor-pointer p-1 text-gray-800 focus:outline-none"
-          aria-label="Toggle Menu"
-        >
-          {isOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
-        </button>
-      </div>
-
-      {/* Menú Desplegable Mobile */}
+      {/* Menú mobile */}
       {isOpen && (
-        <div className="absolute top-18 left-0 w-full bg-white border-b border-gray-200 shadow-lg flex flex-col p-6 gap-4 md:hidden z-50">
-          <button 
-            onClick={() => setIsOpen(false)}
-            className="text-left font-medium uppercase text-sm py-2 border-b border-gray-100"
-          >
-            Inicio
-          </button>
-          <button 
-            onClick={() => setIsOpen(false)}
-            className="text-left font-medium uppercase text-sm py-2 border-b border-gray-100"
-          >
-            Colección
-          </button>
-          <button 
-            onClick={() => setIsOpen(false)}
-            className="text-left font-medium uppercase text-sm py-2 border-b border-gray-100"
-          >
-            Nosotros
-          </button>
-          <button 
-            onClick={() => setIsOpen(false)}
-            className="text-left font-medium uppercase text-sm py-2"
-          >
-            Contacto
-          </button>
+        <div className="absolute left-0 top-full z-50 flex w-full flex-col border-b border-neutral-200 bg-white px-6 py-2 shadow-lg md:hidden">
+          {links.map((link) => (
+            <button
+              key={link}
+              onClick={() => {
+                setActive(link);
+                setIsOpen(false);
+              }}
+              className="border-b border-neutral-100 py-4 text-left text-sm font-medium uppercase tracking-wide last:border-b-0"
+            >
+              {link}
+            </button>
+          ))}
         </div>
       )}
     </nav>
