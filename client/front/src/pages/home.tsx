@@ -10,13 +10,11 @@ const Home = () => {
       <header className="sticky top-0 z-50">
         <NavBar />
       </header>
-
       <main>
         <Carrusel />
         <NewCollectionCatalog />
         <FeatureBanners />
       </main>
-
       <Footer />
     </div>
   );

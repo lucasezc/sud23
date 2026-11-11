@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { ShoppingBag, User, Search, Menu, X } from "lucide-react";
+import { Link } from "react-router-dom";
 
 const links = ["Inicio", "Colección", "Nosotros", "Contacto"];
 
@@ -12,19 +13,17 @@ const NavBar = () => {
     <nav className="relative w-full border-b border-neutral-100 bg-white">
       <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 md:h-[72px] md:px-12">
         {/* Logo */}
-        <a href="/" className="text-2xl font-black tracking-tight md:text-3xl">
-          SÜD23
-        </a>
-
+        <Link to="/">
+          <h1 className="text-2xl font-black tracking-tight md:text-3xl">SÜD23</h1>
+        </Link>
         {/* Menú desktop */}
         <ul className="hidden items-center gap-8 md:flex">
           {links.map((link) => (
             <li key={link}>
               <button
                 onClick={() => setActive(link)}
-                className={`cursor-pointer border-b-2 py-1 text-xs font-medium uppercase tracking-wide transition-colors duration-200 hover:border-black ${
-                  active === link ? "border-black" : "border-transparent"
-                }`}
+                className={`cursor-pointer border-b-2 py-1 text-xs font-medium uppercase tracking-wide transition-colors duration-200 hover:border-black ${active === link ? "border-black" : "border-transparent"
+                  }`}
               >
                 {link}
               </button>

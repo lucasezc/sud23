@@ -3,5 +3,5 @@ import react from '@vitejs/plugin-react'
 
 export default defineConfig({
   plugins: [react()],
-  base: '',
+  base: './', // O podés eliminar la línea de base si querés
 })
