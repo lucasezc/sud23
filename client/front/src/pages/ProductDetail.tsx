@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Link, useParams } from "react-router-dom";
+import { Link, useLocation, useNavigate, useParams } from "react-router-dom";
 import {
   Cloud,
   Feather,
@@ -16,7 +16,12 @@ import AnnouncementBar from "../components/AnnouncementBar";
 import NavBar from "../components/NavBar";
 import Footer from "../components/Footer";
 import RelatedProducts from "../components/RelatedProducts";
-import { products, formatPrice } from "../data/products";
+import { formatPrice } from "../data/products";
+import type { Product } from "../interfaces/product";
+import { getProduct } from "../services/products";
+import { useCart } from "../context/CartContext";
+import { useAuth } from "../context/AuthContext";
+import { addFavorite, getFavorites, removeFavorite } from "../services/favorites";
 
 type TabKey = "descripcion" | "envios" | "cambios";
 
@@ -40,14 +45,21 @@ const perks = [
 
 const ProductDetail = () => {
   const { id } = useParams();
-  const product = products.find((p) => p.id === id);
+  const [product, setProduct] = useState<Product | null>(null);
+  const [loadingProduct, setLoadingProduct] = useState(true);
+  const { addItem } = useCart();
 
   const [activeImg, setActiveImg] = useState(0);
   const [size, setSize] = useState("M");
   const [tab, setTab] = useState<TabKey>("descripcion");
   const [zoom, setZoom] = useState(false);
   const [fav, setFav] = useState(false);
+  const [favBusy, setFavBusy] = useState(false);
+  const [favoriteError, setFavoriteError] = useState("");
   const [added, setAdded] = useState(false);
+  const { token, sessionLoading } = useAuth();
+  const location = useLocation();
+  const navigate = useNavigate();
 
   // Al cambiar de producto (ej. desde "También te puede gustar") se reinicia todo
   useEffect(() => {
@@ -56,7 +68,39 @@ const ProductDetail = () => {
     setZoom(false);
     setTab("descripcion");
     setAdded(false);
+    setLoadingProduct(true);
+
+    if (!id) {
+      setLoadingProduct(false);
+      return;
+    }
+
+    getProduct(id)
+      .then(setProduct)
+      .catch(() => setProduct(null))
+      .finally(() => setLoadingProduct(false));
   }, [id]);
+
+  useEffect(() => {
+    if (!product || !token || sessionLoading) {
+      setFav(false);
+      return;
+    }
+    let active = true;
+    setFavoriteError("");
+    getFavorites(token)
+      .then((favorites) => {
+        if (active) setFav(favorites.some((favorite) => favorite.id === product.id));
+      })
+      .catch((error: unknown) => {
+        if (active) setFavoriteError(error instanceof Error ? error.message : "No se pudieron cargar tus favoritos");
+      });
+    return () => { active = false; };
+  }, [product, token, sessionLoading]);
+
+  if (loadingProduct) {
+    return <div className="grid min-h-screen place-items-center text-sm">Cargando producto...</div>;
+  }
 
   if (!product) {
     return (
@@ -78,9 +122,32 @@ const ProductDetail = () => {
   }
 
   const handleAddToCart = () => {
-    // TODO: conectar con el estado/contexto del carrito
+    if (product.stock < 1) return;
+    addItem(product, size);
     setAdded(true);
     setTimeout(() => setAdded(false), 1800);
+  };
+
+  const toggleFavorite = async () => {
+    if (!token) {
+      navigate("/login", { state: { from: location } });
+      return;
+    }
+    setFavoriteError("");
+    setFavBusy(true);
+    try {
+      if (fav) {
+        await removeFavorite(token, product.id);
+        setFav(false);
+      } else {
+        await addFavorite(token, product.id);
+        setFav(true);
+      }
+    } catch (error) {
+      setFavoriteError(error instanceof Error ? error.message : "No se pudo actualizar el favorito");
+    } finally {
+      setFavBusy(false);
+    }
   };
 
   const tabContent: Record<TabKey, React.ReactNode> = {
@@ -250,19 +317,22 @@ const ProductDetail = () => {
             <div className="mt-5 flex flex-col gap-2">
               <button
                 onClick={handleAddToCart}
-                className="flex cursor-pointer items-center justify-center gap-2 bg-black py-3.5 text-[11px] font-bold uppercase tracking-widest text-white transition-colors hover:bg-neutral-800"
+                disabled={product.stock < 1}
+                className="flex cursor-pointer items-center justify-center gap-2 bg-black py-3.5 text-[11px] font-bold uppercase tracking-widest text-white transition-colors hover:bg-neutral-800 disabled:cursor-not-allowed disabled:bg-neutral-400"
               >
                 <ShoppingBag className="h-4 w-4" />
-                {added ? "Agregado ✓" : "Agregar al carrito"}
+                {product.stock < 1 ? "Sin stock" : added ? "Agregado ✓" : "Agregar al carrito"}
               </button>
               <button
-                onClick={() => setFav(!fav)}
+                onClick={() => void toggleFavorite()}
+                disabled={favBusy || sessionLoading}
                 aria-pressed={fav}
-                className="flex cursor-pointer items-center justify-center gap-2 border border-black py-3.5 text-[11px] font-bold uppercase tracking-widest transition-colors hover:bg-neutral-100"
+                className="flex cursor-pointer items-center justify-center gap-2 border border-black py-3.5 text-[11px] font-bold uppercase tracking-widest transition-colors hover:bg-neutral-100 disabled:cursor-not-allowed disabled:opacity-50"
               >
                 <Heart className={`h-4 w-4 ${fav ? "fill-black" : ""}`} />
-                {fav ? "En favoritos" : "Agregar a favoritos"}
+                {favBusy ? "Guardando..." : fav ? "En favoritos" : "Agregar a favoritos"}
               </button>
+              {favoriteError && <p role="alert" className="text-xs text-red-700">{favoriteError}</p>}
             </div>
 
             {/* Perks */}

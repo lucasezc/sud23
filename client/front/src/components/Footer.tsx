@@ -3,7 +3,7 @@ import type { ReactNode } from "react";
 
 const perks = [
   { icon: <Truck className="h-6 w-6" />, label: "Envíos a todo el país" },
-  { icon: <CreditCard className="h-6 w-6" />, label: "Medios de pago seguros" },
+  { icon: <CreditCard className="h-6 w-6" />, label: "Pagá seguro con Mercado Pago" },
   { icon: <Headphones className="h-6 w-6" />, label: "Atención personalizada" },
 ];
 
@@ -53,7 +53,7 @@ const socials: { label: string; href: string; icon: ReactNode }[] = [
 
 const Footer = () => {
   return (
-    <footer className="mt-1 border-t border-neutral-100 bg-white md:mt-2">
+    <footer id="contacto" className="mt-1 scroll-mt-20 border-t border-neutral-100 bg-white md:mt-2">
       <div className="mx-auto flex w-full max-w-7xl flex-col items-center gap-6 px-4 py-6 md:flex-row md:justify-between md:px-12">
         {/* Beneficios */}
         <ul className="grid w-full grid-cols-1 gap-4 sm:grid-cols-3 md:w-auto md:gap-0 md:divide-x md:divide-neutral-300">

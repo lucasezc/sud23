@@ -9,7 +9,7 @@ type Banner = {
   text: string;
   button: string;
   image: string;
-  href: string;
+  section: string;
 };
 
 const banners: Banner[] = [
@@ -19,20 +19,20 @@ const banners: Banner[] = [
     text: "DESIGNED TO BE DIFFERENT.",
     button: "CONOCÉ MÁS",
     image: BRAND_IMAGE,
-    href: "/nosotros",
+    section: "nosotros",
   },
   {
     id: 2,
     text: "CALIDAD\nEN CADA DETALLE.",
     button: "VER DETALLES",
     image: DETAIL_IMAGE,
-    href: "/coleccion",
+    section: "coleccion",
   },
 ];
 
 const FeatureBanners = () => {
   return (
-    <section className="mx-auto grid w-full max-w-7xl grid-cols-1 gap-1 px-4 md:grid-cols-2 md:gap-2 md:px-12">
+    <section id="nosotros" className="mx-auto grid w-full max-w-7xl scroll-mt-20 grid-cols-1 gap-1 px-4 md:grid-cols-2 md:gap-2 md:px-12">
       {banners.map((b) => (
         <article
           key={b.id}
@@ -57,12 +57,12 @@ const FeatureBanners = () => {
             <p className="whitespace-pre-line text-[10px] font-medium uppercase tracking-[0.25em] md:text-xs">
               {b.text}
             </p>
-            <a
-              href={b.href}
+            <button
+              onClick={() => document.getElementById(b.section)?.scrollIntoView({ behavior: "smooth" })}
               className="mt-2 border border-white px-4 py-2 text-[10px] font-bold uppercase tracking-widest transition-colors hover:bg-white hover:text-black"
             >
               {b.button}
-            </a>
+            </button>
           </div>
         </article>
       ))}

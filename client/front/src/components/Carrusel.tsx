@@ -51,7 +51,7 @@ const Carrusel = () => {
   const current = slides[currentIndex];
 
   return (
-    <section className="relative h-[520px] w-full overflow-hidden bg-neutral-200 md:h-[60vh] md:min-h-[520px]">
+    <section id="inicio" className="relative h-[520px] w-full overflow-hidden bg-neutral-200 md:h-[60vh] md:min-h-[520px]">
       {/* Fotos apiladas con crossfade */}
       {slides.map((s, i) => (
         <div
@@ -83,7 +83,10 @@ const Carrusel = () => {
           </p>
 
           <div className="pt-3">
-            <button className="group flex cursor-pointer items-center gap-3 bg-black px-5 py-3 text-[11px] font-bold uppercase tracking-widest text-white transition-colors hover:bg-neutral-800 md:px-6 md:py-3.5 md:text-xs">
+            <button
+              onClick={() => document.getElementById("coleccion")?.scrollIntoView({ behavior: "smooth" })}
+              className="group flex cursor-pointer items-center gap-3 bg-black px-5 py-3 text-[11px] font-bold uppercase tracking-widest text-white transition-colors hover:bg-neutral-800 md:px-6 md:py-3.5 md:text-xs"
+            >
               {current.buttonText}
               <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
             </button>

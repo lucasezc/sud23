@@ -3,6 +3,7 @@ import Carrusel from "../components/Carrusel";
 import NewCollectionCatalog from "../components/NewCollectionCatalog";
 import FeatureBanners from "../components/Featurebanners";
 import Footer from "../components/Footer";
+import Cart from "../components/Cart";
 
 const Home = () => {
   return (

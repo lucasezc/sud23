@@ -1,11 +1,29 @@
 import type { Product } from "../interfaces/product";
 
-export const formatPrice = (n: number) =>
-  new Intl.NumberFormat("es-AR", {
+const arsFormatter = new Intl.NumberFormat("es-AR", {
     style: "currency",
     currency: "ARS",
     maximumFractionDigits: 0,
-  }).format(n);
+  });
+
+export const formatPrice = (n: number) => arsFormatter.format(n);
+
+export const parseArgentinePrice = (value: string): number | null => {
+  const normalized = value.trim().replace(/[$\s]/g, "");
+  if (!normalized || !/^[\d.,]+$/.test(normalized)) return null;
+
+  const decimalSeparator = normalized.lastIndexOf(",");
+  const integerPart = (decimalSeparator >= 0
+    ? normalized.slice(0, decimalSeparator)
+    : normalized).replace(/[.,]/g, "");
+  const decimalPart = decimalSeparator >= 0
+    ? normalized.slice(decimalSeparator + 1)
+    : "";
+  if (!integerPart || (decimalSeparator >= 0 && !/^\d{1,2}$/.test(decimalPart))) return null;
+
+  const parsed = Number(decimalPart ? `${integerPart}.${decimalPart}` : integerPart);
+  return Number.isFinite(parsed) && parsed >= 0 ? parsed : null;
+};
 
 const SIZES = ["S", "M", "L", "XL"];
 
